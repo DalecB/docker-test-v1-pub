@@ -1,0 +1,23 @@
+FROM node:alpine
+
+WORKDIR /usr/src/app
+
+COPY package.json ./
+
+RUN npm install
+
+COPY ./ ./
+
+CMD ["npm", "run", "start"]
+
+# 노드 모듈은 카피할 필요가 없다. 이미 위에서 설치했기 때문에
+# 도커 환경에선 노드 모듈 파일을 지워줘도 된다.
+# docker build -f Dockerfile.dev  -t jhbang0620/docker-react-app . ::: 실행 안됨 (포트매핑을 안해줬기 때문)
+# docker run -it -p 3000:3000(로컬포트:컨테이너포트) jhbang0620/docker-react-app
+
+# 매번 빌드를 할 때마다 노드 모듈을 다시 설치하는 것은 비효율적이다.
+# 노드 모듈을 볼륨으로 연결해준다.
+# docker run -it -p 3000:3000 -v /usr/src/app/node_modules -v $(pwd):/usr/src/app jhbang0620/docker-react-app
+
+# 테스트 진행
+# docker run -it jhbang0620/docker-react-app npm run test

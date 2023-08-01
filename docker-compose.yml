@@ -1,0 +1,28 @@
+# docker-compose up 명령어를 실행하면 Dockerfile.dev 파일을 사용하여 이미지를 빌드하고 컨테이너를 생성
+version: "3"
+services:
+  # 컨테이너 이름
+  react:
+    build:
+      # 같은 디렉토리에 존재하는 것을 의미
+      # docker-compose.yml 파일이 있는 디렉토리에서 실행해야 함
+      context: .
+      # Dockerfile.dev 파일을 사용
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      # node_modules를 컨테이너에 복사하지 않고, 호스트의 node_modules를 사용
+      - /usr/src/app/node_modules
+      # 현재 디렉토리를 컨테이너의 /usr/src/app에 복사
+      - ./:/usr/src/app
+    # 컨테이너가 종료되지 않도록 함
+    stdin_open: true
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /usr/src/app/node_modules
+      - ./:/usr/src/app
+    command: ["npm", "run", "test"]
